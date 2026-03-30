@@ -60,17 +60,18 @@ php artisan migrate
 
 #### Auth
 
-* POST /api/register
-* POST /api/login
+* POST /api/auth/register
+* POST /api/auth/login
 
-#### Jobs
+#### Vacancy
 
-* GET /api/jobs
-* POST /api/jobs
-* PUT /api/jobs/{id}
+* GET /api/vacancy
+* POST /api/vacancy
+* GET /api/vacancy/{id}
+* PUT /api/vacancy/{id}
 
-#### Applications
+#### Vacancy Apply
 
-* POST /api/jobs/{id}/apply
+* POST /api/vacancy-apply/{id}
 
 ---
