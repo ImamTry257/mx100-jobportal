@@ -54,7 +54,13 @@ php artisan vendor:publish --provider="Laravel\Sanctum\SanctumServiceProvider"
 php artisan migrate
 
 php artisan install:api
+```
 
+### 🔐 Storage for Uploading File
+
+Gunakan command berikut:
+
+```bash
 php artisan storage:link
 ```
 
