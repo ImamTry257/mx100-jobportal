@@ -54,6 +54,8 @@ php artisan vendor:publish --provider="Laravel\Sanctum\SanctumServiceProvider"
 php artisan migrate
 
 php artisan install:api
+
+php artisan storage:link
 ```
 
 ---
@@ -67,13 +69,16 @@ php artisan install:api
 
 #### Vacancy
 
-* GET /api/vacancy
-* POST /api/vacancy
-* GET /api/vacancy/{id}
-* PUT /api/vacancy/{id}
+* GET /api/vacancies
+* POST /api/vacancies
+* GET /api/vacancies/{id}
+* PUT /api/vacancies/{id}
+* GET /api/vacancies/{id}/applicants
 
-#### Vacancy Apply
+#### Applications
 
-* POST /api/vacancy-apply/{id}
+* POST /api/vacancies/{id}/apply
+* POST /api/vacancies/my-applications
+
 
 ---

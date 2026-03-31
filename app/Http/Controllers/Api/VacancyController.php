@@ -3,20 +3,42 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\ApplicantResource;
+use App\Http\Resources\MetaResource;
+use App\Http\Resources\VacancyResource;
 use App\Models\Vacancy;
 use Illuminate\Http\Request;
 
 class VacancyController extends Controller
 {
     // Public (freelancer lihat job)
-    public function index()
+    public function index(Request $request)
     {
-        $vacancy = Vacancy::where('status', Vacancy::published_status)->latest()->get();
+        $query = Vacancy::where('created_at', '!=', null);
+
+        // filter title
+        if ($request->search) {
+            $query->where('title', 'like', '%' . $request->search . '%');
+        }
+
+        // filter status
+        if ($request->status) {
+            $query->where('status', strtoupper($request->status));
+        }
+
+        $vacancy = $query->latest()->paginate($request->size ?? 10);
 
         return response()->json([
             'status'    => true,
             'message'   => 'Vacancy retrieved successfully',
-            'data'      => $vacancy
+            'data'      => VacancyResource::collection($vacancy),
+            'meta'      => MetaResource::make($vacancy),
+            'links' => [
+                'first' => $vacancy->url(1),
+                'last'  => $vacancy->url($vacancy->lastPage()),
+                'prev'  => $vacancy->previousPageUrl(),
+                'next'  => $vacancy->nextPageUrl(),
+            ]
         ], 200);
     }
 
@@ -117,4 +139,53 @@ class VacancyController extends Controller
             ], 500);
         }
     }
+
+    // Company get the vacancy applicants
+    public function applicants(Request $request, $id)
+    {
+        try {
+            $vacancy = Vacancy::findOrFail($id);
+            if ($vacancy->company_id !== $request->user()->id) {
+                return response()->json([
+                    'status'    => false,
+                    'message'   => 'Forbidden Access',
+                    'data'      => null
+                ], 403);
+            }
+
+           $query = $vacancy->applicants()
+                ->when($request->name, function ($q) use ($request) {
+                    $q->where('name', 'like', '%' . $request->name . '%');
+                })
+                ->when($request->status, function ($q) use ($request) {
+                    $q->wherePivot('status', strtoupper($request->status));
+                });
+
+            $perPage = $request->input('size', 10);
+
+            $applicants = $query->paginate($perPage);
+
+            return response()->json([
+                'status'    => true,
+                'message'   => 'Applicants retrieved successfully',
+                'data'      => ApplicantResource::collection($applicants),
+                'meta'      => MetaResource::make($applicants),
+                'links' => [
+                    'first' => $applicants->url(1),
+                    'last'  => $applicants->url($applicants->lastPage()),
+                    'prev'  => $applicants->previousPageUrl(),
+                    'next'  => $applicants->nextPageUrl(),
+                ]
+            ], 200);
+
+        } catch (\Throwable $e) {
+
+            return response()->json([
+                'status'    => false,
+                'message'   => $e->getMessage(),
+                'data'      => null
+            ], 500);
+        }
+    }
+
 }

@@ -24,12 +24,17 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('/', [VacancyController::class, 'store']);
             Route::put('/{id}', [VacancyController::class, 'update']);
             Route::get('/my', [VacancyController::class, 'myJobs']);
+
+            Route::get('/{id}/applicants', [VacancyController::class, 'applicants']);
         });
     });
 
     // Freelancer
     Route::middleware('role:freelancer')->group(function () {
-        Route::post('/vacancies/{id}/apply', [VacancyApplyController::class, 'apply']);
+        Route::prefix('vacancies')->group(function () {
+            Route::post('/{id}/apply', [VacancyApplyController::class, 'apply']);
+            Route::get('/my-applications', [VacancyApplyController::class, 'myApplications']);
+        });
     });
 
     Route::get('/user', function (Request $request) {
