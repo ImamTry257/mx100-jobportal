@@ -32,7 +32,6 @@ Lalu jalankan:
 
 ```bash
 php artisan migrate
-php artisan db:seed
 ```
 
 ---
@@ -50,8 +49,11 @@ php artisan serve
 Gunakan Laravel Sanctum:
 
 ```bash
-php artisan install:sanctum
+composer require laravel/sanctum
+php artisan vendor:publish --provider="Laravel\Sanctum\SanctumServiceProvider"
 php artisan migrate
+
+php artisan install:api
 ```
 
 ---
