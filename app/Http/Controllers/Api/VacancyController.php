@@ -11,14 +11,20 @@ class VacancyController extends Controller
     // Public (freelancer lihat job)
     public function index()
     {
-        return Vacancy::where('status', Vacancy::$published_status)->latest()->get();
+        $vacancy = Vacancy::where('status', Vacancy::published_status)->latest()->get();
+
+        return response()->json([
+            'status'    => true,
+            'message'   => 'Vacancy retrieved successfully',
+            'data'      => $vacancy
+        ], 200);
     }
 
     // Company create job
     public function store(Request $request)
     {
         try {
-            if ($request->user()->role !== 'COMPANY') {
+            if (strtolower($request->user()->role) !== 'company') {
                 return response()->json([
                     'status'    => false,
                     'message'   => 'Forbidden Access',
@@ -26,11 +32,17 @@ class VacancyController extends Controller
                 ], 403);
             }
 
+            $request->validate([
+                'title' => 'required|unique:vacancy,title',
+                'description' => 'required',
+                'status' => 'in:DRAFT,PUBLISHED'
+            ]);
+
             $vacancy = Vacancy::create([
                 'company_id'    => $request->user()->id,
                 'title'         => $request->title,
                 'description'   => $request->description,
-                'status'        => $request->status ?? Vacancy::$draft_status
+                'status'        => $request->status ?? Vacancy::draft_status
             ]);
 
             return response()->json([
@@ -46,14 +58,6 @@ class VacancyController extends Controller
                 'data'      => null
             ], 500);
         }
-
-        $request->validate([
-            'title'         => 'required',
-            'description'   => 'required',
-            'status'        => 'in:DRAFT,PUBLISHED'
-        ]);
-
-
     }
 
     // Update job (only owner)
@@ -69,6 +73,12 @@ class VacancyController extends Controller
                     'data'      => null
                 ], 403);
             }
+
+            $request->validate([
+                'title' => 'required|unique:vacancy,title,' . $vacancy->id,
+                'description' => 'required',
+                'status' => 'in:DRAFT,PUBLISHED'
+            ]);
 
             $vacancy->update($request->only('title', 'description', 'status'));
 

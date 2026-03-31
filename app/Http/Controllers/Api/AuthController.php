@@ -13,17 +13,17 @@ class AuthController extends Controller
     {
         try {
             $request->validate([
-                'name' => 'required',
-                'email' => 'required|email|unique:users',
-                'password' => 'required|min:6',
-                'role' => 'required|in:COMPANY,FREELANCER'
+                'name'      => 'required',
+                'email'     => 'required|email|unique:users',
+                'password'  => 'required|min:6',
+                'role'      => 'required|in:COMPANY,FREELANCER'
             ]);
 
             $user = User::create([
                 'name'      => $request->name,
                 'email'     => $request->email,
                 'password'  => Hash::make($request->password),
-                'role'      => strtoupper($request->role)
+                'role'      => strtolower($request->role)
             ]);
 
             $token = $user->createToken('auth_token')->plainTextToken;

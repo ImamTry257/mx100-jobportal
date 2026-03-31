@@ -20,9 +20,11 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Company
     Route::middleware('role:company')->group(function () {
-        Route::post('/vacancies', [VacancyController::class, 'store']);
-        Route::put('/vacancies/{id}', [VacancyController::class, 'update']);
-        Route::get('/vacancies/my', [VacancyController::class, 'myJobs']);
+        Route::prefix('vacancies')->group(function () {
+            Route::post('/', [VacancyController::class, 'store']);
+            Route::put('/{id}', [VacancyController::class, 'update']);
+            Route::get('/my', [VacancyController::class, 'myJobs']);
+        });
     });
 
     // Freelancer

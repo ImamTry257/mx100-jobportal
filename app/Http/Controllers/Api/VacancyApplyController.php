@@ -15,7 +15,7 @@ class VacancyApplyController extends Controller
             $vacancy = Vacancy::findOrFail($id);
 
             // handle for vacancy not published
-            if ($vacancy->status !== Vacancy::$published_status) {
+            if (strtoupper($vacancy->status) !== Vacancy::published_status) {
                 return response()->json([
                     'status'    => false,
                     'message'   => 'Vacancy not available',
@@ -37,9 +37,9 @@ class VacancyApplyController extends Controller
             }
 
             $createdVacancyApply = VacancyApply::create([
-                'vacancy_id' => $id,
+                'vacancy_id' => intval($id),
                 'freelancer_id' => $request->user()->id,
-                'cv_file' => $request->cv_file
+                'cv_file' => $request->cv_file ?? ""
             ]);
 
             return response()->json([

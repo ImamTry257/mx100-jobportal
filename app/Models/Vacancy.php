@@ -6,8 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Vacancy extends Model
 {
-    public $draft_status = 'DRAFT';
-    public $published_status = 'PUBLISHED';
+    const draft_status = 'DRAFT';
+    const published_status = 'PUBLISHED';
 
     protected $table = 'vacancy';
 
