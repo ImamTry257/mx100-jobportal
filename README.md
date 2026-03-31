@@ -44,7 +44,7 @@ php artisan serve
 
 ---
 
-### 🔐 Authentication
+### Authentication
 
 Gunakan Laravel Sanctum:
 
@@ -56,7 +56,7 @@ php artisan migrate
 php artisan install:api
 ```
 
-### 🔐 Storage for Uploading File
+### Storage for Uploading File
 
 Gunakan command berikut:
 
@@ -66,7 +66,7 @@ php artisan storage:link
 
 ---
 
-### 📡 Endpoint Utama
+### Endpoint Utama
 
 #### Auth
 

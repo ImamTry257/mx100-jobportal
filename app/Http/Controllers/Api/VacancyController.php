@@ -64,6 +64,10 @@ class VacancyController extends Controller
                 'company_id'    => $request->user()->id,
                 'title'         => $request->title,
                 'description'   => $request->description,
+                'salary_min'    => $request->salary_min,
+                'salary_max'    => $request->salary_max,
+                'type'          => $request->type,
+                'expired_at'    => $request->expired_at,
                 'status'        => $request->status ?? Vacancy::draft_status
             ]);
 
@@ -102,7 +106,7 @@ class VacancyController extends Controller
                 'status' => 'in:DRAFT,PUBLISHED'
             ]);
 
-            $vacancy->update($request->only('title', 'description', 'status'));
+            $vacancy->update($request->only('title', 'description', 'status', 'salary_min', 'salary_max', 'type', 'expired_at'));
 
             return response()->json([
                 'status'    => true,
@@ -124,12 +128,19 @@ class VacancyController extends Controller
     public function myJobs(Request $request)
     {
         try {
-            $myVacancies = Vacancy::where('company_id', $request->user()->id)->latest()->get();
+            $myVacancies = Vacancy::where('company_id', $request->user()->id)->latest()->paginate($request->size ?? 10);
 
             return response()->json([
                 'status'    => true,
                 'message'   => 'My jobs retrieved successfully',
-                'data'      => $myVacancies
+                'data'      => VacancyResource::collection($myVacancies),
+                'meta'      => MetaResource::make($myVacancies),
+                'links' => [
+                    'first' => $myVacancies->url(1),
+                    'last'  => $myVacancies->url($myVacancies->lastPage()),
+                    'prev'  => $myVacancies->previousPageUrl(),
+                    'next'  => $myVacancies->nextPageUrl(),
+                ]
             ], 200);
         } catch (\Throwable $e) {
             return response()->json([

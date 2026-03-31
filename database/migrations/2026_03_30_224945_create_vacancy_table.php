@@ -14,8 +14,12 @@ return new class extends Migration
         Schema::create('vacancy', function (Blueprint $table) {
             $table->id();
             $table->foreignId('company_id')->constrained('users')->cascadeOnDelete();
-            $table->string('title');
+            $table->string('title')->index();
             $table->text('description');
+            $table->integer('salary_min')->nullable();
+            $table->integer('salary_max')->nullable();
+            $table->enum('type', ['permanent', 'contract'])->default('permanent')->index();
+            $table->timestamp('expired_at')->nullable()->index();
             $table->enum('status', ['draft', 'published'])->default('draft');
             $table->timestamps();
         });

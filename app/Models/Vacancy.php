@@ -16,6 +16,10 @@ class Vacancy extends Model
         'title',
         'description',
         'status',
+        'salary_min',
+        'salary_max',
+        'type',
+        'expired_at',
         'created_at',
         'updated_at'
     ];
